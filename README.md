@@ -1,204 +1,159 @@
-LLM-DATA
+# LLM-DATA — Relación de Actas (PDF) con Videos de Sesiones en YouTube
 
-Automatiza la extracción de videos de sesiones desde YouTube (YouTube Data API), la lectura de fechas en actas PDF y la vinculación automática PDF ↔ video por fecha.
-Genera un reporte final con enlaces de YouTube y, opcionalmente, links compartidos a los PDFs en Google Drive (PyDrive2). Incluye un archivo de “sin match” para revisión manual.
+Este proyecto automatiza el cruce entre actas (PDF) de sesiones del Senado (SDLR) y la Cámara de Diputados (CDD) de la República Dominicana y sus videos correspondientes en YouTube.
 
-Proyecto financiado por FONDOCyT.
-
-🎯 Objetivo
-
-Centralizar, limpiar y relacionar la información pública de actas oficiales (PDF) y sus transmisiones en video (YouTube), entregando un dataset usable (CSV/Excel) para consulta, análisis y publicación.
-
-🧭 Alcance
-
-Instituciones cubiertas: Cámara de Diputados (CDD) y Senado de la República Dominicana (SDLR).
-
-Fuentes:
-
-Portales oficiales de Actas (descarga de PDFs).
-
-Canal/Playlists oficiales en YouTube (videos de sesiones).
-
-Google Drive (opcional) para alojar PDFs y obtener enlaces compartibles.
-
-Unidad de enlace: Fecha exacta (YYYY-MM-DD) entre el acta (texto de 1.ª página) y el video (publishedAt).
-
-🗂️ Estructura de carpetas (sugerida)
-LLM-DATA/
-├─ CDD ACTAS PDFS/                # PDFs de Cámara de Diputados
-├─ SDLR ACTAS PDFS/                # PDFs de Senado
-├─ client_secrets.json            # Credenciales OAuth (Drive) - no subir público
-├─ 1CDD_yt_urls.py                # YouTube → CSV (Cámara)
-├─ 1SDLR_yt_urls.py                # YouTube → CSV (Senado)
-├─ 2CDD_pdfs.py                   # PDFs → CSV (Cámara)
-├─ 2SDR_pdfs.py                   # PDFs → CSV (Senado)
-├─ 3CDD_relacion.py               # Relación + Drive (Cámara)
-├─ 3SDR_relacion.py               # Relación + Drive (Senado)
-├─ 4_excel_pretty.py              # Embellece Excel con hipervínculos
-├─ CDD_yt_urls.csv                # salida YouTube (Cámara)
-├─ SDR_yt_urls.csv                # salida YouTube (Senado)
-├─ CDD PDFS.csv                   # salida PDFs (Cámara)
-├─ SDR PDFS.csv                   # salida PDFs (Senado)
-├─ CDD RELACION.csv               # salida final (Cámara)
-├─ SDR RELACION.csv               # salida final (Senado)
-└─ no_match.csv                   # actas sin video (para revisión)
+A partir de los PDFs descargados y las publicaciones oficiales de cada canal, el pipeline:
+-
+Lee y entiende fechas directamente del contenido de los PDFs (no del nombre del archivo).
 
 
-Puedes mantener un único flujo por institución o fusionar ambos en un pipeline general. Lo importante es conservar nombres claros y consistentes.
+Consulta YouTube (YouTube Data API v3) para obtener título, fecha y URL de cada sesión.
 
-⚙️ Tecnologías y librerías
 
-Python 3.10+
+Relaciona PDF ↔ video por fecha, generando un reporte final con enlaces clicables.
 
-pandas: tabular, merges, exportes CSV/Excel.
 
-pdfplumber: extracción de texto desde PDFs (1.ª página).
+(Opcional) Publica los PDFs en Google Drive y agrega el link compartido a cada acta.
 
-regex (re): fechas “largas” y numéricas, robusto a tildes/variantes.
 
-google-api-python-client: YouTube Data API v3.
+Produce un archivo “sin match” con los casos que requieren revisión manual.
 
-PyDrive2: autenticación y acceso a Google Drive (links compartidos).
 
-openpyxl (opcional): Excel con estilo e hipervínculos.
+El objetivo es entregar una vista única y confiable por institución y por año: qué acta corresponde a qué video, todo en CSV/Excel listo para análisis, verificación y archivo.
+---
 
-Instalación rápida:
+## 📚 Fuentes oficiales
 
-pip install pandas pdfplumber google-api-python-client pydrive2 openpyxl
+* **Cámara de Diputados (CDD) – Actas:** [https://www.camaradediputados.gob.do/actas](https://www.camaradediputados.gob.do/actas)
+* **Senado de la República (SDLR):** [https://www.senado.gob.do/](https://www.senado.gob.do/)
+* **YouTube – Cámara de Diputados:** [https://www.youtube.com/@CamaraDeDiputadosRD](https://www.youtube.com/@CamaraDeDiputadosRD)
+* **YouTube – Senado:** [https://www.youtube.com/@SenadoRD](https://www.youtube.com/@SenadoRD)
 
-🔑 Credenciales & claves
+---
 
-YouTube API Key (YouTube Data API v3).
+## ✅ Resultado
 
-Google Drive OAuth: client_secrets.json (descargado desde Google Cloud → Credentials).
+El pipeline genera, para **cada institución** (CDD / SDLR):
 
-⚠️ No subas estas credenciales a repositorios públicos.
+* **`*_RELACION.csv`** → columnas: **`nombre_documento`**, **`link_pdf`** (enlace público a Drive, si aplica), **`enlace_youtube`**.
+* **`no_match.csv`** → PDFs cuya fecha **no encontró** video (para supervisión manual).
+* **`*_Archivo Relacional.xlsx`** → versión en Excel con hipervínculos clicables
 
-🚀 Cómo correr el pipeline (resumen)
-1) Extraer videos de YouTube → *_yt_urls.csv
+---
 
-Obtiene título, fecha (YYYY-MM-DD) y URL desde playlist(s) o canal.
+## 🗂️ Estructura de carpetas (idéntica para CDD y SDLR)
 
+### `CDD DATA PROCESSING`
+
+```
+CDD Archivo Relacional.xlsx
+1CDD_yt_urls.py          # YouTube API: extrae títulos/fechas/URLs de videos
+2CDD_pdfs.py             # PDF → fecha (lee 1ª página y detecta AAAA-MM-DD)
+3CDD_relacion.py         # Une por fecha, añade links de Drive, exporta CSV y no_match
+4CDD_cvsaexcel.py        # Da formato y exporta Excel desde el CSV final
+CDD PDFS.csv             # Salida de (2): nombre_documento, fecha_contenido
+CDD RELACION.csv         # Salida de (3): nombre_documento, link_pdf, enlace_youtube
+CDD_yt_urls.csv          # Salida de (1): titulo, fecha_publicacion, url_youtube
+no_match.csv             # Salida de (3): PDFs sin video coincidente
+
+### `SDLR DATA PROCESSING`
+
+```
+SDLR Archivo Relacional.xlsx
+1SDLR_yt_urls.py
+2SDLR_pdfs.py
+3SDLR_relacion.py
+4SDLR_cvsaexcel.py
+SDLR PDFS.csv
+SDLR RELACION.csv
+SDLR_yt_urls.csv
+no_match.csv
+
+## 🔁 Flujo de trabajo (4 scripts)
+
+1. **YouTube → CSV**
+   Ejecuta `1CDD_yt_urls.py` / `1SDLR_yt_urls.py`.
+
+   * Usa **YouTube Data API v3** para obtener **título, fecha de publicación y URL** de videos.
+   * Filtra por patrones (sesiones/legislaturas) y guarda en `*_yt_urls.csv`.
+
+2. **PDFs → fechas**
+   Ejecuta `2CDD_pdfs.py` / `2SDLR_pdfs.py`.
+
+   * Abre cada PDF con **pdfplumber**, toma la **1ª página** y extrae la fecha (regex robusta en español; también entiende 01/10/2024).
+   * Guarda `*_PDFS.csv` con **`nombre_documento`** y **`fecha_contenido`** (AAAA-MM-DD).
+
+3. **Relación por fecha + Drive**
+   Ejecuta `3CDD_relacion.py` / `3SDLR_relacion.py`.
+
+   * Une `*_PDFS.csv` con `*_yt_urls.csv` por **fecha**.
+   * (Opcional) Usa **PyDrive2** + **`client_secrets.json`** para mapear **enlaces de Drive** de cada PDF por nombre.
+   * Exporta **`*_RELACION.csv`** y **`no_match.csv`**.
+
+4. **CSV → Excel con formato**
+   Ejecuta `4CDD_cvsaexcel.py` / `4SDLR_cvsaexcel.py`.
+
+   * Crea **`*_Archivo Relacional.xlsx`** con headers en negrita, filtros, zebra y **hipervínculos clicables**.
+
+---
+
+## ▶️ Cómo ejecutar (ejemplo CDD)
+
+```bash
+# 1) Videos de YouTube → CDD_yt_urls.csv
 python 1CDD_yt_urls.py
-python 1SDR_yt_urls.py
 
-
-Parámetros dentro del script:
-
-API_KEY
-
-PLAYLIST_ID o CHANNEL_ID (según enfoque)
-
-Salida:
-CDD_yt_urls.csv / SDR_yt_urls.csv con columnas:
-
-titulo_youtube, fecha_publicacion, url_youtube
-
-2) Procesar PDFs locales → * PDFS.csv
-
-Lee la primera página de cada PDF, detecta la fecha oficial y guarda:
-
-nombre_documento, fecha_contenido
-
+# 2) PDFs locales → fechas → CDD PDFS.csv
 python 2CDD_pdfs.py
-python 2SDR_pdfs.py
 
-
-Parámetros clave:
-
-ROOT_DIR: carpeta con los PDFs (CDD ACTAS PDFS/, SDR ACTAS PDFS/).
-
-Si un PDF no tiene fecha legible, se deja vacío (aparecerá luego en no_match.csv).
-
-3) Relacionar PDFs ↔ YouTube + (opcional) enlaces de Drive
-
-Hace merge por fecha exacta y agrega links de Drive por nombre de archivo.
-
+# 3) Relación (join por fecha) + enlaces Drive → CSV final + no_match
 python 3CDD_relacion.py
-python 3SDR_relacion.py
 
+# 4) Excel con estilo desde el CSV final
+python 4CDD_cvsaexcel.py
+```
 
-Salidas:
+> Repite exactamente lo mismo con los scripts **SDLR** para el Senado.
 
-CDD RELACION.csv / SDR RELACION.csv:
+---
 
-nombre_documento, link_pdf, enlace_youtube
+## 🔐 Credenciales y requisitos
 
+* **Python 3.10+**
+* Instalar dependencias:
 
-no_match.csv: PDFs sin video para revisión manual.
+  ```
+  pip install google-api-python-client pydrive2 pdfplumber pandas openpyxl
+  ```
+* **YouTube Data API v3:** crea una **API key** en Google Cloud y colócala en `1*_yt_urls.py`.
+* **Google Drive (opcional):**
 
-Notas:
+  * Crea credencial **OAuth de escritorio** y descarga **`client_secrets.json`**.
+  * Guarda el JSON **junto** al script `3*_relacion.py`.
+  * La primera ejecución abrirá el navegador para autorizar; se guardará un token local.
 
-Si usas Drive, define DRIVE_FOLDER_ID y coloca client_secrets.json junto al script.
+---
 
-El script intenta publicar lectura (“anyone with the link, reader”) para generar un link compartible.
+## 🧩 Consideraciones
 
-El mapeo a Drive es por nombre (con normalización para evitar fallos por tildes/“(1)”/espacios).
+* La coincidencia se hace por **fecha exacta** (AAAA-MM-DD). Si el acta o el video difieren por zona horaria o publicación tardía, el elemento irá a **`no_match.csv`** para revisión manual.
+* La detección de fecha se hace en la **1ª página** del PDF; formatos muy atípicos pueden requerir ajustar la regex.
+* Para los enlaces de Drive, los **nombres de archivos** en la nube deben **coincidir exactamente** con los nombres detectados localmente.
 
-4) Excel “bonito” con hipervínculos (opcional)
+---
 
-Convierte el CSV final en un Excel con formato (encabezados, filtros y enlaces clicables).
+## 🛠️ Tecnologías
 
-python 4_excel_pretty.py
+* **Python**, **pandas**, **pdfplumber**, **openpyxl**
+* **YouTube Data API v3** (`google-api-python-client`)
+* **Google Drive** con **PyDrive2** (OAuth)
+* **Expresiones regulares** para fechas en español
 
-🧪 Criterios y supuestos
+---
 
-Match por fecha exacta: fecha_contenido (PDF) = fecha_publicacion (YouTube).
+## 📦 Entregables
 
-La fecha del PDF proviene del contenido (no del nombre del archivo).
+* **`*_RELACION.csv`** – reporte final (PDF ↔ YouTube).
+* **`*_Archivo Relacional.xlsx`** – el mismo reporte en Excel, con formato y links activos.
+* **`no_match.csv`** – pendientes a validar manualmente.
 
-Si en un día hay varios videos, el merge puede generar múltiples filas para un mismo PDF (caso real a revisar).
-
-Los PDFs en Drive deben coincidir en nombre con los locales (se normaliza para tolerar may/minus, tildes, “(1)”, etc.).
-
-🛠️ Troubleshooting
-
-No aparecen links de Drive:
-
-Verifica DRIVE_FOLDER_ID y que los archivos estén en esa carpeta (no en subcarpetas).
-
-Revisa que autorizaste con la misma cuenta donde está la carpeta.
-
-Chequea consola: el script imprime cuántos PDFs vio en Drive.
-
-KeyError: ‘local_path’ / encabezados raros:
-
-Asegúrate de que * PDFS.csv tenga nombre_documento o local_path y fecha_contenido.
-
-Normaliza encabezados: sin espacios, minúsculas.
-
-Fechas vacías en PDFs:
-
-Documento puede ser imagen escaneada sin OCR.
-
-Intenta otra versión del PDF o un OCR previo (no incluido).
-
-YouTube devuelve 0 videos:
-
-Verifica API_KEY y PLAYLIST_ID/CHANNEL_ID.
-
-La API tiene límites por consulta; si el canal es muy grande, pagina o usa la playlist de uploads.
-
-🔒 Privacidad y buenas prácticas
-
-Las fuentes son públicas.
-
-Mantén claves y JSON fuera de repos públicos.
-
-En Drive, usa enlaces solo lectura.
-
-Guarda un respaldo de los PDFs originales.
-
-🙌 Créditos
-
-Implementación y documentación: María José Colás.
-
-Proyecto financiado por FONDOCyT.
-
-🧵 Roadmap (ideas futuras)
-
-Emparejamiento “tolerante” (±1 día) y/o por número de sesión si el portal lo publica.
-
-Pipeline unificado multi-año/multi-institución con configuración en YAML.
-
-Panel simple (Streamlit) para explorar RELACION/no_match.
