@@ -1,0 +1,6 @@
+﻿/CDD CAMARA DE DIPUTADOS/CDD ACTAS PDFS/
+/SDLR SENADO DE LA REPUBLICA/SDLR ACTAS PDFS/
+*.pdf
+.idea/
+.vscode/
+__pycache__/
