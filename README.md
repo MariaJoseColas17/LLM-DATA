@@ -4,7 +4,7 @@ Este proyecto automatiza el cruce entre actas (PDF) de sesiones del Senado (SDLR
 
 A partir de los PDFs descargados y las publicaciones oficiales de cada canal, el pipeline:
 -
-Lee y entiende fechas directamente del contenido de los PDFs (no del nombre del archivo).
+Lee y entiende fechas directamente del contenido de los PDFs o del nombre del archivo.
 
 
 Consulta YouTube (YouTube Data API v3) para obtener título, fecha y URL de cada sesión.
@@ -35,7 +35,7 @@ El objetivo es entregar una vista única y confiable por institución y por año
 
 El pipeline genera, para **cada institución** (CDD / SDLR):
 
-* **`*_RELACION.csv`** → columnas: **`nombre_documento`**, **`link_pdf`** (enlace público a Drive, si aplica), **`enlace_youtube`**.
+* **`*_RELACION.csv`** → columnas: **`nombre_documento`**, **`link_pdf`** (enlace público a Drive), y **`enlace_youtube`**.
 * **`no_match.csv`** → PDFs cuya fecha **no encontró** video (para supervisión manual).
 * **`*_Archivo Relacional.xlsx`** → versión en Excel con hipervínculos clicables
 
@@ -56,18 +56,6 @@ CDD RELACION.csv         # Salida de (3): nombre_documento, link_pdf, enlace_you
 CDD_yt_urls.csv          # Salida de (1): titulo, fecha_publicacion, url_youtube
 no_match.csv             # Salida de (3): PDFs sin video coincidente
 
-### `SDLR DATA PROCESSING`
-
-```
-SDLR Archivo Relacional.xlsx
-1SDLR_yt_urls.py
-2SDLR_pdfs.py
-3SDLR_relacion.py
-4SDLR_cvsaexcel.py
-SDLR PDFS.csv
-SDLR RELACION.csv
-SDLR_yt_urls.csv
-no_match.csv
 
 ## 🔁 Flujo de trabajo (4 scripts)
 
