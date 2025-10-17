@@ -1,4 +1,6 @@
 # LLM-DATA — Relación de Actas (PDF) con Videos de Sesiones en YouTube
+Proyecto financiado por Fondocyt
+-
 
 Este proyecto automatiza el cruce entre actas (PDF) de sesiones del Senado (SDLR) y la Cámara de Diputados (CDD) de la República Dominicana y sus videos correspondientes en YouTube.
 
