@@ -148,7 +148,7 @@ python 4CDD_cvsaexcel.py
 
 
 Agradecimientos
--
+--
 Este proyecto ha sido financiado parcialmente por el Ministerio de Educación Superior, Ciencia y Tecnología (MESCyT) de la República Dominicana a través de la subvención FONDOCYT. Los autores agradecen este apoyo. 
 Las opiniones, hallazgos, conclusiones o recomendaciones expresadas en este material son responsabilidad de los autores y no necesariamente reflejan la opinión del MESCyT.
 
