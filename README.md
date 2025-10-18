@@ -5,6 +5,7 @@ Este proyecto ha sido financiado parcialmente por el Ministerio de Educación Su
 Las opiniones, hallazgos, conclusiones o recomendaciones expresadas en este material son responsabilidad de los autores y no necesariamente reflejan la opinión del MESCyT.
 
 Este proyecto automatiza el cruce entre actas (PDF) de sesiones del Senado (SDLR) y la Cámara de Diputados (CDD) de la República Dominicana y sus videos correspondientes en YouTube.
+-
 
 A partir de los PDFs descargados y las publicaciones oficiales de cada canal, el pipeline:
 -
