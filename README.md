@@ -1,8 +1,4 @@
 # LLM-DATA — Relación de Actas (PDF) con Videos de Sesiones en YouTube
-Agradecimientos
--
-Este proyecto ha sido financiado parcialmente por el Ministerio de Educación Superior, Ciencia y Tecnología (MESCyT) de la República Dominicana a través de la subvención FONDOCYT. Los autores agradecen este apoyo. 
-Las opiniones, hallazgos, conclusiones o recomendaciones expresadas en este material son responsabilidad de los autores y no necesariamente reflejan la opinión del MESCyT.
 
 Este proyecto automatiza el cruce entre actas (PDF) de sesiones del Senado (SDLR) y la Cámara de Diputados (CDD) de la República Dominicana y sus videos correspondientes en YouTube.
 -
@@ -149,4 +145,10 @@ python 4CDD_cvsaexcel.py
 * **`*_RELACION.csv`** – reporte final (PDF ↔ YouTube).
 * **`*_Archivo Relacional.xlsx`** – el mismo reporte en Excel, con formato y links activos.
 * **`no_match.csv`** – pendientes a validar manualmente.
+
+
+Agradecimientos
+-
+Este proyecto ha sido financiado parcialmente por el Ministerio de Educación Superior, Ciencia y Tecnología (MESCyT) de la República Dominicana a través de la subvención FONDOCYT. Los autores agradecen este apoyo. 
+Las opiniones, hallazgos, conclusiones o recomendaciones expresadas en este material son responsabilidad de los autores y no necesariamente reflejan la opinión del MESCyT.
 
